@@ -3,10 +3,12 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 
+const fsAdapter = require('../adapters/reports-files-db')
+
 router.get('/', async function(req, res, next) {
   const reportsFolder = '../../reports';
   const dir = path.resolve(__dirname, reportsFolder);
-  fs.readdir(dir, (error, files) => {
+  fsAdapter.readdir(dir, (error, files) => {
     if (error) next(error);
     const reports = files.reduce((acc, file) => {
       const [filename] = file.split('.');
@@ -26,7 +28,7 @@ router.get('/:file/:action', async function(req, res, next) {
   const newFilename = `${date}_${department}_${status}.${ext}`;
   const oldPath = path.resolve(__dirname, reportsFolder, file);
   const newPath = path.resolve(__dirname, reportsFolder, newFilename);
-  fs.rename(oldPath, newPath, function(error) {
+  fsAdapter.rename(oldPath, newPath, function(error) {
     if (error) next(error);
     res.redirect('/reports');
   });
